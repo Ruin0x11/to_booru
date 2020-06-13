@@ -23,20 +23,20 @@ defmodule ToBooru.Scraper.Danbooru2 do
 
   def extract_rating(post) do
     case post["safety"] do
-      "e" -> "unsafe"
-      "q" -> "questionable"
-      _ -> "safe"
+      "e" -> :unsafe
+      "q" -> :questionable
+      _ -> :safe
     end
   end
 
   def make_upload(post) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(post["file_url"]),
-      tags: split_tags(post["tag_string_general"], "general")
-      ++ split_tags(post["tag_string_copyright"], "copyright")
-      ++ split_tags(post["tag_string_character"], "character")
-      ++ split_tags(post["tag_string_artist"], "artist")
-      ++ split_tags(post["tag_string_meta"], "meta"),
+      tags: split_tags(post["tag_string_general"], :general)
+      ++ split_tags(post["tag_string_copyright"], :copyright)
+      ++ split_tags(post["tag_string_character"], :character)
+      ++ split_tags(post["tag_string_artist"], :artist)
+      ++ split_tags(post["tag_string_meta"], :meta),
       rating: extract_rating(post)
     }
   end

@@ -3,7 +3,8 @@ defmodule ToBooru do
   Extracts images from the given URI and converts each to a
   szurubooru-compatible upload.
 
-  """  def extract_uploads(uri = %URI{}) do
+  """
+  def extract_uploads(uri = %URI{}) do
     case ToBooru.Scraper.for_uri(uri) do
       nil -> []
       mod -> mod.extract_uploads(uri)
