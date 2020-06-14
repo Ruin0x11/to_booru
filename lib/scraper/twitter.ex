@@ -24,6 +24,7 @@ defmodule ToBooru.Scraper.Twitter do
     IO.inspect(tweet, limit: :infinity)
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(media.media_url_https),
+      preview_uri: ToBooru.URI.parse("#{media.media_url_https}:small"),
       safety: if tweet.possibly_sensitive do
         :unsafe
       else

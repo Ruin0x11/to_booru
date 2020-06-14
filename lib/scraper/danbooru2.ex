@@ -30,6 +30,7 @@ defmodule ToBooru.Scraper.Danbooru2 do
   def make_upload(post) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(post["file_url"]),
+      preview_uri: ToBooru.URI.parse(post["preview_file_url"]),
       tags: ToBooru.Tag.convert_danbooru2_tags(post),
       safety: extract_safety(post)
     }

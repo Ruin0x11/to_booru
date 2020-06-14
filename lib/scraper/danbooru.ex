@@ -44,6 +44,7 @@ defmodule ToBooru.Scraper.Danbooru do
   def make_upload(post, uri) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(post["file_url"]),
+      preview_uri: ToBooru.URI.parse(post["preview_url"]),
       safety: extract_safety(post),
       tags: String.split(post["tags"]) |> Enum.map(fn tag -> get_tag(tag, uri) end)
     }

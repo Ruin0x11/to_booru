@@ -53,6 +53,7 @@ defmodule ToBooru.Scraper.Pixiv do
   def make_upload(page, resp, tags) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(page["image_urls"]["large"]),
+      preview_uri: ToBooru.URI.parse(page["image_urls"]["medium"]),
       safety: extract_safety(resp),
       tags: tags,
     }
@@ -64,7 +65,7 @@ defmodule ToBooru.Scraper.Pixiv do
          password <- Application.get_env(:to_booru, :pixiv_password),
            id <- extract_id(uri) do
       work = Pixiv.Authenticator.login!(username, password)
-             |> Pixiv.Work.get!(id, params: [{:image_sizes, "large"}])
+             |> Pixiv.Work.get!(id, params: [{:image_sizes, "medium,large"}])
       tags = extract_tags(work)
       if work["page_count"] > 1 && work["metadata"] do
         work["metadata"]["pages"]

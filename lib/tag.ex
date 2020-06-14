@@ -5,7 +5,8 @@ defmodule ToBooru.Tag do
     [
       {Tesla.Middleware.BaseUrl, tag_lookup_host()},
       Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, [{"accept", "application/json"}]}
+      {Tesla.Middleware.Headers, [{"accept", "application/json"}]},
+      Tesla.Middleware.Logger,
     ]
     |> Tesla.client
   end
