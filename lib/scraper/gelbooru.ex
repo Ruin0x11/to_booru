@@ -5,13 +5,15 @@ defmodule ToBooru.Scraper.Gelbooru do
   def name, do: "gelbooru"
 
   @impl ToBooru.Scraper
+  def infer_tags, do: false
+
+  @impl ToBooru.Scraper
   def applies_to(uri) do
     if uri.query != nil do
       with query <- URI.decode_query(uri.query) do
         String.match?(uri.path, ~r/index\.php$/)
         && query["page"] == "post"
         && query["s"] == "view"
-        && query["q"] == "index"
         && query["id"] != nil
       end
     else
@@ -37,21 +39,19 @@ defmodule ToBooru.Scraper.Gelbooru do
     end
   end
 
-  def extract_tag_category(tag, uri) do
-    with category <- String.to_atom(tag["type"])  do
-      case category do
-        :tag -> :general
-        :metadata -> :meta
-        _ -> category
-      end
+  def extract_tag_category(tag) do
+    case tag["type"] do
+      "tag" -> :general
+      "metadata" -> :meta
+      _ -> String.to_atom tag["type"]
     end
   end
 
   def get_tag(name, uri) do
     with full_uri <- Map.merge(uri, %{path: "/index.php", query: nil}),
-         {:ok, resp} <- client |> Tesla.get(to_string(full_uri), query: [{:page, "dapi"}, {:s, "tag"}, {:q, "index"}, {:json, 1}, {:name, name}]),
+         {:ok, resp} <- client() |> Tesla.get(to_string(full_uri), query: [{:page, "dapi"}, {:s, "tag"}, {:q, "index"}, {:json, 1}, {:name, name}]),
            tag <- List.first(resp.body) do
-      %ToBooru.Model.Tag{name: name, category: extract_tag_category(tag, uri)}
+      %ToBooru.Model.Tag{name: name, category: extract_tag_category(tag)}
     end
   end
 
@@ -59,7 +59,10 @@ defmodule ToBooru.Scraper.Gelbooru do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(post["file_url"]),
       safety: extract_safety(post),
-      tags: String.split(post["tags"]) |> Enum.map(fn tag -> get_tag(tag, uri) end)
+      tags: post["tags"]
+      |> HtmlEntities.decode
+      |> String.split
+      |> Enum.map(fn tag -> get_tag(tag, uri) end)
     }
   end
 
@@ -72,10 +75,10 @@ defmodule ToBooru.Scraper.Gelbooru do
   end
 
   @impl ToBooru.Scraper
-  def raextract_uploads(uri) do
+  def extract_uploads(uri) do
     with id <- extract_id(uri),
          full_uri <- Map.merge(uri, %{path: "/index.php"}),
-         {:ok, resp} <- client |> Tesla.get(to_string(full_uri), query: [{:page, "dapi"}, {:s, "post"}, {:q, "index"}, {:json, 1}, {:id, id}]) do
+         {:ok, resp} <- client() |> Tesla.get(to_string(full_uri), query: [{:page, "dapi"}, {:s, "post"}, {:q, "index"}, {:json, 1}, {:id, id}]) do
       [make_upload(List.first(resp.body), uri)]
     end
   end

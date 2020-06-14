@@ -1,5 +1,6 @@
 defmodule ToBooru.Scraper do
   @callback name :: String.t
+  @callback infer_tags :: boolean
   @callback applies_to(URI.t) :: boolean
   @callback extract_uploads(URI.t) :: {:ok, [ToBooru.Model.Upload.t]} | {:error, String.t}
 

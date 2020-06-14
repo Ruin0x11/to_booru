@@ -5,6 +5,9 @@ defmodule ToBooru.Scraper.Twitter do
   def name, do: "twitter"
 
   @impl ToBooru.Scraper
+  def infer_tags, do: true
+
+  @impl ToBooru.Scraper
   def applies_to(uri) do
     String.match?(uri.authority, ~r/twitter.com/)
     && length(Regex.scan(~r/\/status\/([0-9]+)/, uri.path)) == 1
@@ -18,13 +21,15 @@ defmodule ToBooru.Scraper.Twitter do
   end
 
   def make_upload(media, tweet) do
+    IO.inspect(tweet, limit: :infinity)
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(media.media_url_https),
       safety: if tweet.possibly_sensitive do
         :unsafe
       else
         :safe
-      end
+      end,
+      source: URI.parse("https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}")
     }
   end
 

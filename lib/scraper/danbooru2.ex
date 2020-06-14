@@ -5,6 +5,9 @@ defmodule ToBooru.Scraper.Danbooru2 do
   def name, do: "danbooru2"
 
   @impl ToBooru.Scraper
+  def infer_tags, do: false
+
+  @impl ToBooru.Scraper
   def applies_to(uri) do
     length(Regex.scan(~r/\/posts\/([0-9]+)/, uri.path)) == 1
   end
@@ -14,11 +17,6 @@ defmodule ToBooru.Scraper.Danbooru2 do
     |> Enum.map(fn [_, i] -> i end)
     |> List.first
     |> String.to_integer
-  end
-
-  def split_tags(tag_string, category) do
-    String.split(tag_string)
-    |> Enum.map(fn tag -> %ToBooru.Model.Tag{name: tag, category: category} end)
   end
 
   def extract_safety(post) do
@@ -32,11 +30,7 @@ defmodule ToBooru.Scraper.Danbooru2 do
   def make_upload(post) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(post["file_url"]),
-      tags: split_tags(post["tag_string_general"], :general)
-      ++ split_tags(post["tag_string_copyright"], :copyright)
-      ++ split_tags(post["tag_string_character"], :character)
-      ++ split_tags(post["tag_string_artist"], :artist)
-      ++ split_tags(post["tag_string_meta"], :meta),
+      tags: ToBooru.Tag.convert_danbooru2_tags(post),
       safety: extract_safety(post)
     }
   end
@@ -53,7 +47,7 @@ defmodule ToBooru.Scraper.Danbooru2 do
   def extract_uploads(uri) do
     with id <- extract_id(uri),
          full_uri <- Map.merge(uri, %{path: "/posts/#{id}.json"}),
-         {:ok, resp} <- client |> Tesla.get(to_string(full_uri)) do
+         {:ok, resp} <- client() |> Tesla.get(to_string(full_uri)) do
       [make_upload(resp.body)]
     end
   end

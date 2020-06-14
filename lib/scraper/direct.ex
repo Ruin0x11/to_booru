@@ -20,6 +20,9 @@ defmodule ToBooru.Scraper.Direct do
   def name, do: "direct"
 
   @impl ToBooru.Scraper
+  def infer_tags, do: true
+
+  @impl ToBooru.Scraper
   def applies_to(uri) do
     case Tesla.client([]) |> Tesla.head(to_string(uri)) do
       {:ok, env} -> MapSet.member?(@supported_mime_types, Tesla.get_header(env, "content-type"))
