@@ -21,9 +21,9 @@ defmodule ToBooru.Scraper.Direct do
 
   @impl ToBooru.Scraper
   def applies_to(uri) do
-    with {:ok, env} = Tesla.client([]) |> Tesla.head(to_string(uri)),
-      content_type <- Tesla.get_header(env, "content-type") do
-        MapSet.member?(@supported_mime_types, content_type)
+    case Tesla.client([]) |> Tesla.head(to_string(uri)) do
+      {:ok, env} -> MapSet.member?(@supported_mime_types, Tesla.get_header(env, "content-type"))
+      {:error, reason} -> false
     end
   end
 
