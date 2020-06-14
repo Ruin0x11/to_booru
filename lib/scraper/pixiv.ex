@@ -17,7 +17,7 @@ defmodule ToBooru.Scraper.Pixiv do
     |> String.to_integer
   end
 
-  def extract_rating(resp) do
+  def extract_safety(resp) do
     if Enum.member?(["r18", "r18-g"], resp["age_limit"]) do
       :unsafe
     else
@@ -28,7 +28,7 @@ defmodule ToBooru.Scraper.Pixiv do
   def make_upload(page, resp) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(page["image_urls"]["large"]),
-      rating: extract_rating(resp)
+      safety: extract_safety(resp)
     }
   end
 

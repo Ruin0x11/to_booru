@@ -21,10 +21,10 @@ defmodule ToBooru.Scraper.Danbooru do
     |> Enum.map(fn tag -> %ToBooru.Model.Tag{name: tag, category: category} end)
   end
 
-  def extract_rating(post) do
+  def extract_safety(post) do
     case post["safety"] do
       "e" -> :unsafe
-      "q" -> :questionable
+      "q" -> :sketchy
       _ -> :safe
     end
   end
@@ -65,7 +65,7 @@ defmodule ToBooru.Scraper.Danbooru do
   def make_upload(post, uri) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(post["file_url"]),
-      rating: extract_rating(post),
+      safety: extract_safety(post),
       tags: String.split(post["tags"]) |> Enum.map(fn tag -> get_tag(tag, uri) end)
     }
   end

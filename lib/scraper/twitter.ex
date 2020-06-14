@@ -20,7 +20,7 @@ defmodule ToBooru.Scraper.Twitter do
   def make_upload(media, tweet) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(media.media_url_https),
-      rating: if tweet.possibly_sensitive do
+      safety: if tweet.possibly_sensitive do
         :unsafe
       else
         :safe

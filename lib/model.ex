@@ -8,13 +8,13 @@ defmodule ToBooru.Model.Tag do
 end
 
 defmodule ToBooru.Model.Upload do
-  defstruct uri: nil, tags: [], source: nil, rating: :safe, version: 0
+  defstruct uri: nil, tags: [], source: nil, safety: :safe, version: 0
 
   @type t :: %__MODULE__{
     uri: URI.t(),
     tags: [ToBooru.Model.Tag.t()],
     source: URI.t(),
-    rating: atom(),
+    safety: atom(),
     version: integer()
   }
 end

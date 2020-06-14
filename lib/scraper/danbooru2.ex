@@ -21,10 +21,10 @@ defmodule ToBooru.Scraper.Danbooru2 do
     |> Enum.map(fn tag -> %ToBooru.Model.Tag{name: tag, category: category} end)
   end
 
-  def extract_rating(post) do
+  def extract_safety(post) do
     case post["safety"] do
       "e" -> :unsafe
-      "q" -> :questionable
+      "q" -> :sketchy
       _ -> :safe
     end
   end
@@ -37,7 +37,7 @@ defmodule ToBooru.Scraper.Danbooru2 do
       ++ split_tags(post["tag_string_character"], :character)
       ++ split_tags(post["tag_string_artist"], :artist)
       ++ split_tags(post["tag_string_meta"], :meta),
-      rating: extract_rating(post)
+      safety: extract_safety(post)
     }
   end
 

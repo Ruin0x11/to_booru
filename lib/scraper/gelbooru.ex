@@ -29,10 +29,10 @@ defmodule ToBooru.Scraper.Gelbooru do
     |> Enum.map(fn tag -> %ToBooru.Model.Tag{name: tag, category: category} end)
   end
 
-  def extract_rating(post) do
+  def extract_safety(post) do
     case post["rating"] do
       "e" -> :unsafe
-      "q" -> :questionable
+      "q" -> :sketchy
       _ -> :safe
     end
   end
@@ -58,7 +58,7 @@ defmodule ToBooru.Scraper.Gelbooru do
   def make_upload(post, uri) do
     %ToBooru.Model.Upload{
       uri: ToBooru.URI.parse(post["file_url"]),
-      rating: extract_rating(post),
+      safety: extract_safety(post),
       tags: String.split(post["tags"]) |> Enum.map(fn tag -> get_tag(tag, uri) end)
     }
   end
@@ -72,7 +72,7 @@ defmodule ToBooru.Scraper.Gelbooru do
   end
 
   @impl ToBooru.Scraper
-  def extract_uploads(uri) do
+  def raextract_uploads(uri) do
     with id <- extract_id(uri),
          full_uri <- Map.merge(uri, %{path: "/index.php"}),
          {:ok, resp} <- client |> Tesla.get(to_string(full_uri), query: [{:page, "dapi"}, {:s, "post"}, {:q, "index"}, {:json, 1}, {:id, id}]) do
