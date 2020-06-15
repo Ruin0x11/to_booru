@@ -2,11 +2,11 @@ defmodule ToBooru do
   defp fix_tags(upload, mod) do
     tags = if mod.infer_tags do
       case ToBooru.Tag.lookup_source(to_string(upload.uri)) do
-        [] -> case ToBooru.Tag.lookup_source(to_string(upload.source)) do
-                [] -> upload.tags
-                tags -> List.first(tags)
-              end
-          tags -> List.first(tags)
+        nil -> case ToBooru.Tag.lookup_source(to_string(upload.source)) do
+                       nil -> upload.tags
+                       tag -> tag
+                     end
+        tag -> tag
       end
     else
       upload.tags
@@ -18,7 +18,7 @@ defmodule ToBooru do
         %ToBooru.Model.Tag{name: "imported:#{mod.name}", category: :batch}
       ]
     }
-end
+  end
 
   defp put_if_nil(map, key, value) do
     case map do

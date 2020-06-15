@@ -30,18 +30,14 @@ defmodule ToBooru.Scraper.Pixiv do
 
   def extract_artist_tag(resp) do
     case ToBooru.Tag.lookup_artist(resp["user"]["account"]) do
-      [] -> case ToBooru.Tag.lookup_artist(resp["user"]["name"]) do
-              [] -> nil
-              tags -> List.first tags
-            end
-      tags -> List.first tags
+      nil -> ToBooru.Tag.lookup_artist(resp["user"]["name"])
+      tag -> tag
     end
   end
 
   def extract_tags(resp) do
     tags = resp["tags"]
     |> Enum.map(&ToBooru.Tag.lookup/1)
-    |> Enum.map(&List.first/1)
     |> Enum.filter(& &1)
 
     case extract_artist_tag(resp) do
@@ -61,10 +57,8 @@ defmodule ToBooru.Scraper.Pixiv do
 
   @impl ToBooru.Scraper
   def extract_uploads(uri) do
-    with username <- Application.get_env(:to_booru, :pixiv_username),
-         password <- Application.get_env(:to_booru, :pixiv_password),
-           id <- extract_id(uri) do
-      work = Pixiv.Authenticator.login!(username, password)
+    with id <- extract_id(uri) do
+      work = ToBooru.Scraper.Pixiv.Cache.login
              |> Pixiv.Work.get!(id, params: [{:image_sizes, "medium,large"}])
       tags = extract_tags(work)
       if work["page_count"] > 1 && work["metadata"] do

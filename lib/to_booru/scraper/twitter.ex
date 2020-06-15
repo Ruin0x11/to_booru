@@ -21,17 +21,22 @@ defmodule ToBooru.Scraper.Twitter do
   end
 
   def make_upload(media, tweet) do
-    IO.inspect(tweet, limit: :infinity)
+    url = case media.type do
+            n when n in ["animated_gif", "video"]
+              -> media.raw_data.video_info.variants |> List.first |> Access.get(:url)
+            _ -> media.media_url_https
+          end
+
     %ToBooru.Model.Upload{
-      uri: ToBooru.URI.parse(media.media_url_https),
-      preview_uri: ToBooru.URI.parse("#{media.media_url_https}:small"),
       safety: if tweet.possibly_sensitive do
         :unsafe
       else
         :safe
       end,
-      source: URI.parse("https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}")
-    }
+      source: URI.parse("https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}"),
+      uri: ToBooru.URI.parse(url),
+      preview_uri: ToBooru.URI.parse("#{media.media_url_https}:small")
+    } |> IO.inspect
   end
 
   @impl ToBooru.Scraper
