@@ -3,6 +3,8 @@ defmodule ToBooru.Scraper do
   @callback infer_tags :: boolean
   @callback applies_to(URI.t) :: boolean
   @callback extract_uploads(URI.t) :: {:ok, [ToBooru.Model.Upload.t]} | {:error, String.t}
+  @callback get_image(URI.t) :: {:ok, Tesla.Env.t} | {:error, String.t}
+  @optional_callbacks get_image: 1
 
   def all do
     with {:ok, list} <- :application.get_key(:to_booru, :modules) do

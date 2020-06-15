@@ -20,6 +20,14 @@ defmodule ToBooru do
     end
   end
 
+  defp infer_tags_all([first | rest] = uploads, no_infer) do
+    if no_infer do
+      [infer_tags(first) | rest]
+    else
+      Enum.map(uploads, &infer_tags/1)
+    end
+  end
+
   defp put_if_nil(map, key, value) do
     case map do
       %{^key => nil} ->
@@ -51,12 +59,7 @@ defmodule ToBooru do
         |> Enum.map(fn upload -> put_if_nil(upload, :source, uri) end)
         |> Enum.map(fn upload -> put_if_nil(upload, :preview_uri, uri) end)
         |> Enum.map(fn upload -> add_import_tags(upload, mod) end)
-        |> Enum.map(fn upload -> if !no_infer and mod.infer_tags do
-            infer_tags(upload)
-          else
-            upload
-          end
-          end)
+        |> infer_tags_all(no_infer)
       end
     end
   end

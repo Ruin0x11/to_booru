@@ -7,6 +7,19 @@ defmodule ToBooru.Scraper.Pixiv do
   @impl ToBooru.Scraper
   def infer_tags, do: true
 
+  def client do
+    [
+      Tesla.Middleware.JSON,
+      {Tesla.Middleware.Headers, ToBooru.Scraper.Pixiv.Cache.login |> Pixiv.headers_for}
+    ]
+    |> Tesla.client
+  end
+
+  @impl ToBooru.Scraper
+  def get_image(uri) do
+    Tesla.get(client(), to_string(uri))
+  end
+
   @impl ToBooru.Scraper
   def applies_to(uri) do
     String.match?(uri.authority, ~r/pixiv\.net$/)
@@ -43,7 +56,7 @@ defmodule ToBooru.Scraper.Pixiv do
     case extract_artist_tag(resp) do
       nil -> tags
       artist_tag -> tags ++ [artist_tag]
-    end
+    end |> Enum.uniq
   end
 
   def make_upload(page, resp, tags) do
