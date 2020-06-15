@@ -8,7 +8,7 @@ defmodule ToBooru.Scraper do
     with {:ok, list} <- :application.get_key(:to_booru, :modules) do
       list
       |> Enum.filter(& &1 |> Module.split |> Enum.take(2) == ~w|ToBooru Scraper|)
-      |> Enum.filter(& &1 != ToBooru.Scraper)
+      |> Enum.filter(& &1 |> Module.split |> length == 3)
     end
   end
 
