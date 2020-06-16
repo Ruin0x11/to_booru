@@ -27,7 +27,7 @@ defmodule ToBooru.Scraper.Danbooru2 do
 
   @impl ToBooru.Scraper
   def get_image(uri) do
-    Tesla.get(client(uri), uri)
+    Tesla.get(client(uri), to_string(uri))
   end
 
   @impl ToBooru.Scraper
