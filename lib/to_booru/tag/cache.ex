@@ -1,11 +1,21 @@
 defmodule ToBooru.Tag.Cache do
   use GenServer
 
+  defp headers(uri) do
+    case ToBooru.Credentials.for_uri(uri) do
+      %{username: username, password: password} ->
+        with token <- Base.encode64("#{username}:#{password}") do
+          [{"accept", "application/json"}, {"authorization", "Basic #{token}"}]
+        end
+      _ -> [{"accept", "application/json"}]
+    end
+  end
+
   defp client do
     [
       {Tesla.Middleware.BaseUrl, ToBooru.Tag.tag_lookup_host},
       Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, [{"accept", "application/json"}]}
+      {Tesla.Middleware.Headers, headers(ToBooru.Tag.tag_lookup_host)}
     ]
     |> Tesla.client
   end
