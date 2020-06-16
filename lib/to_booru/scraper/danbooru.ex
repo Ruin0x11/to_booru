@@ -59,11 +59,19 @@ defmodule ToBooru.Scraper.Danbooru do
     Tesla.client(middleware)
   end
 
+  def login_params(uri) do
+    case ToBooru.Credentials.for_uri(uri) do
+      %{username: username, password: password} ->
+        [login: username, password_hash: :crypto.hash(:sha, password) |> Base.encode16]
+      _ -> []
+    end
+  end
+
   @impl ToBooru.Scraper
   def extract_uploads(uri) do
     with id <- extract_id(uri),
          full_uri <- Map.merge(uri, %{path: "/post/index.json"}),
-         {:ok, resp} <- client() |> Tesla.get(to_string(full_uri), query: [{:tags, "id:#{id}"}]) do
+         {:ok, resp} <- client() |> Tesla.get(to_string(full_uri), query: [tags: "id:#{id}"] ++ login_params(uri)) do
       [make_upload(List.first(resp.body), uri)]
     end
   end
