@@ -36,7 +36,7 @@ defmodule ToBooru.Scraper.Twitter do
       source: URI.parse("https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}"),
       uri: ToBooru.URI.parse(url),
       preview_uri: ToBooru.URI.parse("#{media.media_url_https}:small")
-    } |> IO.inspect
+    }
   end
 
   @impl ToBooru.Scraper

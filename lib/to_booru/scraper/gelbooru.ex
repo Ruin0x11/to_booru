@@ -77,7 +77,7 @@ defmodule ToBooru.Scraper.Gelbooru do
   @impl ToBooru.Scraper
   def extract_uploads(uri) do
     with id <- extract_id(uri),
-         full_uri <- Map.merge(uri, %{path: "/index.php"}),
+         full_uri <- Map.merge(uri, %{path: "/index.php", query: nil}),
          {:ok, resp} <- client() |> Tesla.get(to_string(full_uri), query: [{:page, "dapi"}, {:s, "post"}, {:q, "index"}, {:json, 1}, {:id, id}]) do
       [make_upload(List.first(resp.body), uri)]
     end

@@ -62,7 +62,7 @@ defmodule ToBooru.Scraper.Danbooru2 do
   @impl ToBooru.Scraper
   def extract_uploads(uri) do
     with id <- extract_id(uri),
-         full_uri <- Map.merge(uri, %{path: "/posts/#{id}.json"}),
+         full_uri <- Map.merge(uri, %{path: "/posts/#{id}.json", query: nil}),
          {:ok, resp} <- client(uri) |> Tesla.get(to_string(full_uri)) do
       [make_upload(resp.body)]
     end

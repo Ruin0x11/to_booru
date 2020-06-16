@@ -33,7 +33,7 @@ defmodule ToBooru.Scraper.Danbooru do
   end
 
   def get_tag(name, uri) do
-    with full_uri <- Map.merge(uri, %{path: "/tag/index.json"}),
+    with full_uri <- Map.merge(uri, %{path: "/tag/index.json", query: nil}),
         {:ok, resp} <- client() |> Tesla.get(to_string(full_uri), query: [{:name, name}, {:limit, 0}]),
       tag <- resp.body
       |> Enum.find(fn tag -> tag["name"] == name end) do
@@ -70,7 +70,7 @@ defmodule ToBooru.Scraper.Danbooru do
   @impl ToBooru.Scraper
   def extract_uploads(uri) do
     with id <- extract_id(uri),
-         full_uri <- Map.merge(uri, %{path: "/post/index.json"}),
+         full_uri <- Map.merge(uri, %{path: "/post/index.json", query: nil}),
          {:ok, resp} <- client() |> Tesla.get(to_string(full_uri), query: [tags: "id:#{id}"] ++ login_params(uri)) do
       [make_upload(List.first(resp.body), uri)]
     end
