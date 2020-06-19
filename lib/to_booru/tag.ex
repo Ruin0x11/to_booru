@@ -60,4 +60,8 @@ defmodule ToBooru.Tag do
   def lookup_source(source) do
     GenServer.call(ToBooru.Tag.Cache, {:lookup_source, source}) |> conv
   end
+
+  def clear_cache() do
+    GenServer.call(ToBooru.Tag.Cache, :clear)
+  end
 end

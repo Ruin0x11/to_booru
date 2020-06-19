@@ -13,9 +13,9 @@ defmodule ToBooru do
       case ToBooru.Tag.lookup_source(to_string(upload.uri)) do
         nil -> case ToBooru.Tag.lookup_source(to_string(upload.source)) do
                  nil -> upload
-                 tags -> %{upload | tags: tags ++ [extra]}
+                 %{tags: tags, safety: safety} -> %{upload | tags: tags ++ [extra], safety: safety}
                end
-        tags -> %{upload | tags: tags ++ [extra]}
+        %{tags: tags, safety: safety} -> %{upload | tags: tags ++ [extra], safety: safety}
       end
     end
   end
@@ -47,7 +47,6 @@ defmodule ToBooru do
   @doc """
   Extracts images from the given URI and converts each to a
   szurubooru-compatible upload.
-
   """
   def extract_uploads(string, opts \\ [])
 
@@ -58,8 +57,8 @@ defmodule ToBooru do
         mod -> mod.extract_uploads(uri)
         |> Enum.map(fn upload -> put_if_nil(upload, :source, uri) end)
         |> Enum.map(fn upload -> put_if_nil(upload, :preview_uri, uri) end)
-        |> Enum.map(fn upload -> add_import_tags(upload, mod) end)
         |> infer_tags_all(no_infer)
+        |> Enum.map(fn upload -> add_import_tags(upload, mod) end)
       end
     end
   end

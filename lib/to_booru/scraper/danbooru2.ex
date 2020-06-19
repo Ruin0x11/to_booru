@@ -43,7 +43,7 @@ defmodule ToBooru.Scraper.Danbooru2 do
   end
 
   def extract_safety(post) do
-    case post["safety"] do
+    case post["rating"] do
       "e" -> :unsafe
       "q" -> :sketchy
       _ -> :safe

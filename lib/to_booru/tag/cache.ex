@@ -59,7 +59,10 @@ defmodule ToBooru.Tag.Cache do
 
   defp lookup_source(source) do
     case Tesla.get(client(), "/posts.json", query: [{:tags, "source:#{source}"}]) do
-      {:ok, resp} -> {:ok, Enum.map(resp.body, &ToBooru.Tag.convert_danbooru2_tags/1)}
+      {:ok, resp} -> {:ok, Enum.map(resp.body, & %{
+                             tags: ToBooru.Tag.convert_danbooru2_tags(&1),
+                             safety: ToBooru.Scraper.Danbooru2.extract_safety(&1) }
+                       )}
       {:error, e} -> {:error, e}
     end
   end
@@ -95,5 +98,10 @@ defmodule ToBooru.Tag.Cache do
              end
       tag_list -> {:reply, {:ok, tag_list}, state}
     end
+  end
+
+  @impl true
+  def handle_call(:clear, _from, state) do
+    {:reply, {:ok, nil}, %{general: %{}, artist: %{}, source: %{}}}
   end
 end
