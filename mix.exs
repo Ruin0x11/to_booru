@@ -26,6 +26,7 @@ defmodule ToBooru.MixProject do
       {:hackney, "~> 1.15.2"},
       {:jason, ">= 1.0.0"},
       {:floki, "~> 0.26.0"},
+      {:oauther, "~> 1.1"},
       {:extwitter, "~> 0.12.0"},
       {:pixiv, github: "Ruin0x11/Pixiv.ex"},
 
