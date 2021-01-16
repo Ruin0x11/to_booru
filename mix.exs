@@ -22,8 +22,8 @@ defmodule ToBooru.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 1.3.0"},
-      {:hackney, "~> 1.15.2"},
+      {:tesla, "~> 1.4.0"},
+      {:hackney, "~> 1.7"},
       {:jason, ">= 1.0.0"},
       {:floki, "~> 0.26.0"},
       {:oauther, "~> 1.1"},
