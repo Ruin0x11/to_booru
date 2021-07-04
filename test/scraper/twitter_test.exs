@@ -1,7 +1,5 @@
 defmodule ToBooru.Scraper.Twitter.Test do
-  use ExUnit.Case, async: true
-  use ExVCR.Mock
-  require Assertions
+  use ToBooru.TestCase
 
   test "Can scrape Twitter sites" do
     use_cassette "scraper_twitter" do

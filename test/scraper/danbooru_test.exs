@@ -1,7 +1,5 @@
 defmodule ToBooru.Scraper.Danbooru.Test do
-  use ExUnit.Case, async: true
-  use ExVCR.Mock
-  require Assertions
+  use ToBooru.TestCase
 
   test "Can scrape Danbooru 1 sites" do
     use_cassette "scraper_danbooru" do

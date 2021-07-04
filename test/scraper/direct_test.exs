@@ -1,7 +1,5 @@
 defmodule ToBooru.Scraper.Direct.Test do
-  use ExUnit.Case, async: true
-  use ExVCR.Mock
-  require Assertions
+  use ToBooru.TestCase
 
   test "Can scrape direct sites" do
     use_cassette "scraper_direct" do

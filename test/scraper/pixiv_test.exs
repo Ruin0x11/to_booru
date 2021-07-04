@@ -1,7 +1,5 @@
 defmodule ToBooru.Scraper.Pixiv.Test do
-  use ExUnit.Case, async: true
-  use ExVCR.Mock
-  require Assertions
+  use ToBooru.TestCase
 
   test "Can scrape Pixiv sites" do
     use_cassette "scraper_pixiv" do
