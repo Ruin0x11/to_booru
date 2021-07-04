@@ -2,7 +2,7 @@ defmodule ToBooru.Scraper.Twitter.Test do
   use ToBooru.TestCase
 
   test "Can scrape Twitter sites" do
-    use_cassette "scraper_twitter" do
+    use_cassette "scraper_twitter", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://twitter.com/ma_rukan/status/1411631788733075461") |> ToBooru.Scraper.Twitter.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)
@@ -35,7 +35,7 @@ defmodule ToBooru.Scraper.Twitter.Test do
   end
 
   test "Can scrape Twitter sites (image)" do
-    use_cassette "scraper_twitter_image" do
+    use_cassette "scraper_twitter_image", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://twitter.com/BinoOzu777/status/1411235979994669064/photo/1") |> ToBooru.Scraper.Twitter.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)
@@ -68,7 +68,7 @@ defmodule ToBooru.Scraper.Twitter.Test do
   end
 
   test "Can scrape Twitter sites (extended)" do
-    use_cassette "scraper_twitter_extended" do
+    use_cassette "scraper_twitter_extended", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://twitter.com/taktwi/status/1411323853263937537") |> ToBooru.Scraper.Twitter.extract_uploads
       assert Enum.count(results) == 4
       result = Enum.at(results, 0)
@@ -101,7 +101,7 @@ defmodule ToBooru.Scraper.Twitter.Test do
   end
 
   test "Can scrape Twitter sites (safety)" do
-    use_cassette "scraper_twitter_safety" do
+    use_cassette "scraper_twitter_safety", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://mobile.twitter.com/NLO28636331/status/1411515939523153920/photo/1") |> ToBooru.Scraper.Twitter.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)

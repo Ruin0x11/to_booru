@@ -2,7 +2,7 @@ defmodule ToBooru.Scraper.Danbooru2.Test do
   use ToBooru.TestCase
 
   test "Can scrape Danbooru 2 sites" do
-    use_cassette "scraper_danbooru_2" do
+    use_cassette "scraper_danbooru_2", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://danbooru.donmai.us/posts/472445") |> ToBooru.Scraper.Danbooru2.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)

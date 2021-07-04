@@ -2,7 +2,7 @@ defmodule ToBooru.Scraper.Gelbooru.Test do
   use ToBooru.TestCase
 
   test "Can scrape gelbooru sites" do
-    use_cassette "scraper_gelbooru" do
+    use_cassette "scraper_gelbooru", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://gelbooru.com/index.php?page=post&s=view&id=6235985") |> ToBooru.Scraper.Gelbooru.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)

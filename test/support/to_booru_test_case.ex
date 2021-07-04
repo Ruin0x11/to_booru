@@ -11,7 +11,8 @@ defmodule ToBooru.TestCase do
       end
 
       setup do
-        ExVCR.Config.filter_sensitive_data("Basic [a-z]+", "Basic ***")
+        ExVCR.Config.filter_sensitive_data("Bearer [0-9A-Za-z=-]+", "Bearer ***")
+        ExVCR.Config.filter_sensitive_data("Basic [0-9A-Za-z=-]+", "Basic ***")
         ExVCR.Config.cassette_library_dir("test/fixture/vcr_cassettes")
       end
     end

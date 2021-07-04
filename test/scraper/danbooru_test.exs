@@ -2,7 +2,7 @@ defmodule ToBooru.Scraper.Danbooru.Test do
   use ToBooru.TestCase
 
   test "Can scrape Danbooru 1 sites" do
-    use_cassette "scraper_danbooru" do
+    use_cassette "scraper_danbooru", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://yande.re/post/show/760737") |> ToBooru.Scraper.Danbooru.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)
@@ -42,7 +42,7 @@ defmodule ToBooru.Scraper.Danbooru.Test do
   end
 
   test "Can scrape Danbooru 1 sites (rating)" do
-    use_cassette "scraper_danbooru_rating" do
+    use_cassette "scraper_danbooru_rating", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://yande.re/post/show/60948") |> ToBooru.Scraper.Danbooru.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)
@@ -80,7 +80,7 @@ defmodule ToBooru.Scraper.Danbooru.Test do
   end
 
   test "Can scrape Danbooru 1 sites (tag categories)" do
-    use_cassette "scraper_danbooru_tag_categories" do
+    use_cassette "scraper_danbooru_tag_categories", match_requests_on: [:query, :request_body] do
       results = ToBooru.URI.parse("https://yande.re/post/show/468894") |> ToBooru.Scraper.Danbooru.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)

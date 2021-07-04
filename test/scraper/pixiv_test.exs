@@ -2,7 +2,7 @@ defmodule ToBooru.Scraper.Pixiv.Test do
   use ToBooru.TestCase
 
   test "Can scrape Pixiv sites" do
-    use_cassette "scraper_pixiv" do
+    use_cassette "scraper_pixiv", match_requests_on: [:query] do
       results = ToBooru.URI.parse("https://www.pixiv.net/artworks/89023335") |> ToBooru.Scraper.Pixiv.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)
@@ -40,7 +40,7 @@ defmodule ToBooru.Scraper.Pixiv.Test do
   end
 
   test "Can scrape Pixiv sites (gallery)" do
-    use_cassette "scraper_pixiv_gallery" do
+    use_cassette "scraper_pixiv_gallery", match_requests_on: [:query] do
       results = ToBooru.URI.parse("https://www.pixiv.net/artworks/63226245") |> ToBooru.Scraper.Pixiv.extract_uploads
       assert Enum.count(results) == 31
       result = Enum.at(results, 0)
@@ -84,7 +84,7 @@ defmodule ToBooru.Scraper.Pixiv.Test do
   end
 
   test "Can scrape Pixiv sites (ugoira)" do
-    use_cassette "scraper_pixiv_ugoira" do
+    use_cassette "scraper_pixiv_ugoira", match_requests_on: [:query] do
       results = ToBooru.URI.parse("https://www.pixiv.net/artworks/90372852") |> ToBooru.Scraper.Pixiv.extract_uploads
       assert Enum.count(results) == 1
       result = Enum.at(results, 0)
@@ -104,7 +104,7 @@ defmodule ToBooru.Scraper.Pixiv.Test do
   end
 
   test "Can scrape Pixiv sites (safety)" do
-    use_cassette "scraper_pixiv_safety" do
+    use_cassette "scraper_pixiv_safety", match_requests_on: [:query] do
       results = ToBooru.URI.parse("https://www.pixiv.net/artworks/76612075") |> ToBooru.Scraper.Pixiv.extract_uploads
       assert Enum.count(results) == 10
       result = Enum.at(results, 0)
