@@ -6,8 +6,7 @@ config :extwitter, :oauth, [
    access_token: "",
    access_token_secret: ""
 ]
-config :to_booru, pixiv_username: ""
-config :to_booru, pixiv_password: ""
+config :to_booru, pixiv_refresh_token: ""
 
 config :to_booru, credentials: [
   {~r/yande\.re/, %{username: "", password: ""}},

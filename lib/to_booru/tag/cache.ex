@@ -29,10 +29,17 @@ defmodule ToBooru.Tag.Cache do
     {:ok, %{general: %{}, artist: %{}, source: %{}}}
   end
 
-  defp make_tag(tag) do
+  defp make_tag_wiki_page(tag) do
     %ToBooru.Model.Tag{
       name: tag["title"],
-      category: ToBooru.Tag.extract_tag_category(tag["category_name"])
+      category: :unknown
+    }
+  end
+
+  defp make_tag_tag(tag) do
+    %ToBooru.Model.Tag{
+      name: tag["name"],
+      category: ToBooru.Tag.extract_tag_category(tag["category"])
     }
   end
 
@@ -45,7 +52,22 @@ defmodule ToBooru.Tag.Cache do
 
   defp lookup(other_name) do
     case Tesla.get(client(), "/wiki_pages.json", query: [{:"search[other_names_match]", other_name}]) do
-      {:ok, resp} -> {:ok, Enum.map(resp.body, &make_tag/1)}
+      {:ok, resp} ->
+        fallback = Enum.map(resp.body, &make_tag_wiki_page/1)
+        case Enum.find(resp.body, fn x -> Enum.any?(x["other_names"], fn on -> other_name == on end) end) do
+          nil -> {:ok, fallback}
+          x -> case lookup_tag(x["title"]) do
+                 {:ok, resp2} -> {:ok, resp2}
+                 _ -> {:ok, fallback}
+               end
+        end
+      {:error, e} -> {:error, e}
+    end
+  end
+
+  defp lookup_tag(name) do
+    case Tesla.get(client(), "/tags.json", query: [{:"search[name_matches]", name}]) do
+      {:ok, resp} -> {:ok, Enum.map(resp.body, &make_tag_tag/1)}
       {:error, e} -> {:error, e}
     end
   end
@@ -101,7 +123,7 @@ defmodule ToBooru.Tag.Cache do
   end
 
   @impl true
-  def handle_call(:clear, _from, state) do
+  def handle_call(:clear, _from, _state) do
     {:reply, {:ok, nil}, %{general: %{}, artist: %{}, source: %{}}}
   end
 end

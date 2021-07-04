@@ -41,10 +41,18 @@ defmodule ToBooru.Scraper.Twitter do
 
   @impl ToBooru.Scraper
   def extract_uploads(uri) do
-    with tweet <- extract_id(uri) |> ExTwitter.show do
-      tweet
-      |> get_in([Access.key(:extended_entities), Access.key(:media)])
-      |> Enum.map(fn media -> make_upload(media, tweet) end)
+    with tweet <- extract_id(uri) |> ExTwitter.show(tweet_mode: :extended) do
+      case get_in(tweet, [Access.key(:extended_entities)]) do
+        nil -> case get_in(tweet, [Access.key(:entities)]) do
+                 nil -> []
+                 e -> e
+                 |> get_in([Access.key(:media)])
+                 |> Enum.map(fn media -> make_upload(media, tweet) end)
+               end
+        e -> e
+        |> get_in([Access.key(:media)])
+        |> Enum.map(fn media -> make_upload(media, tweet) end)
+      end
     end
   end
 end

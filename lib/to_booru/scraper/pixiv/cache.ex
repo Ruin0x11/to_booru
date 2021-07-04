@@ -8,11 +8,11 @@ defmodule ToBooru.Scraper.Pixiv.Cache do
   def login do
     with %{credentials: credentials} <- Agent.get(__MODULE__, & &1) do
       case credentials do
-        nil -> with username <- Application.get_env(:to_booru, :pixiv_username),
-                    password <- Application.get_env(:to_booru, :pixiv_password),
-                    creds <- Pixiv.Authenticator.login!(username, password) do
-                      Agent.update(__MODULE__, & %{&1 | credentials: creds})
-                    end
+        nil -> creds = Application.get_env(:to_booru, :pixiv_refresh_token)
+        |> Pixiv.Credentials.from_token
+        |> Pixiv.Authenticator.refresh!
+          Agent.update(__MODULE__, & %{&1 | credentials: creds})
+
         creds -> Agent.update(__MODULE__, & %{&1 | credentials: Pixiv.Authenticator.refresh!(creds)})
       end
     end

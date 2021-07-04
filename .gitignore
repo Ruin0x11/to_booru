@@ -23,3 +23,5 @@ erl_crash.dump
 to_booru-*.tar
 
 config/secret.exs
+/test/secrets.exs
+/test/fixture/
