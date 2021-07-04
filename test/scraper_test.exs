@@ -1,4 +1,4 @@
-defmodule ScraperTest do
+defmodule ToBooru.Scraper.Test do
   use ExUnit.Case
 
   test "Scraper.for_uri is correct" do

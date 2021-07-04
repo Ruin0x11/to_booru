@@ -9,6 +9,9 @@ defmodule ToBooru.Scraper.Direct do
      "image/gif",
      "image/apng",
      "image/webp",
+     "image/avif",
+     "image/heif",
+     "image/heic",
      "video/mpeg",
      "video/3gpp",
      "video/mp4",
@@ -33,9 +36,9 @@ defmodule ToBooru.Scraper.Direct do
   @impl ToBooru.Scraper
   def extract_uploads(uri) do
     [
-        %ToBooru.Model.Upload{
-          uri: uri
-        }
+      %ToBooru.Model.Upload{
+        uri: uri
+      }
     ]
   end
 end
