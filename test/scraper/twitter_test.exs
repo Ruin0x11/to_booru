@@ -132,4 +132,35 @@ defmodule ToBooru.Scraper.Twitter.Test do
       Assertions.assert_maps_equal(result, expected, Map.keys(expected))
     end
   end
+
+  test "Can scrape Twitter sites (video)" do
+    use_cassette "scraper_twitter_video", match_requests_on: [:query, :request_body] do
+      results = ToBooru.URI.parse("https://twitter.com/reNPCarts/status/1411559376440250370") |> ToBooru.Scraper.Twitter.extract_uploads
+      assert Enum.count(results) == 1
+      result = Enum.at(results, 0)
+      expected = %{
+        preview_uri: %URI{
+          authority: "pbs.twimg.com",
+          fragment: nil,
+          host: "pbs.twimg.com",
+          path: "/ext_tw_video_thumb/1411558961652895745/pu/img/uia6_PnQqBX8R9rJ.jpg:small",
+          port: 443,
+          query: nil,
+          scheme: "https",
+          userinfo: nil
+        },
+        uri: %URI{
+          authority: "video.twimg.com",
+          fragment: nil,
+          host: "video.twimg.com",
+          path: "/ext_tw_video/1411558961652895745/pu/pl/IrMUU-bpD3E3UTzG.m3u8",
+          port: 443,
+          query: "tag=12&container=fmp4",
+          scheme: "https",
+          userinfo: nil
+        }
+      }
+      Assertions.assert_maps_equal(result, expected, Map.keys(expected))
+    end
+  end
 end

@@ -24,7 +24,7 @@ defmodule ToBooru.Scraper.Twitter do
     url = case media.type do
             n when n in ["animated_gif", "video"]
               -> media.raw_data.video_info.variants |> List.first |> Access.get(:url)
-            _ -> media.media_url_https
+            _ -> "#{media.media_url_https}:orig"
           end
 
     %ToBooru.Model.Upload{
@@ -34,7 +34,7 @@ defmodule ToBooru.Scraper.Twitter do
         :safe
       end,
       source: URI.parse("https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}"),
-      uri: ToBooru.URI.parse("#{url}:orig"),
+      uri: ToBooru.URI.parse(url),
       preview_uri: ToBooru.URI.parse("#{media.media_url_https}:small")
     }
   end
