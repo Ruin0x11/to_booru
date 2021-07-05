@@ -23,7 +23,10 @@ defmodule ToBooru.Scraper.Twitter do
   def make_upload(media, tweet) do
     url = case media.type do
             n when n in ["animated_gif", "video"]
-              -> media.raw_data.video_info.variants |> List.first |> Access.get(:url)
+              -> media.raw_data.video_info.variants
+              |> Enum.filter(fn v -> String.starts_with?(v.content_type, "video/") end)
+              |> Enum.max_by(fn v -> v.bitrate || 0 end)
+              |> Access.get(:url)
             _ -> "#{media.media_url_https}:orig"
           end
 

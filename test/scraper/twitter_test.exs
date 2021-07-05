@@ -153,9 +153,9 @@ defmodule ToBooru.Scraper.Twitter.Test do
           authority: "video.twimg.com",
           fragment: nil,
           host: "video.twimg.com",
-          path: "/ext_tw_video/1411558961652895745/pu/pl/IrMUU-bpD3E3UTzG.m3u8",
+          path: "/ext_tw_video/1411558961652895745/pu/vid/720x720/9z-IkXzbJfBoYsLi.mp4",
           port: 443,
-          query: "tag=12&container=fmp4",
+          query: "tag=12",
           scheme: "https",
           userinfo: nil
         }
