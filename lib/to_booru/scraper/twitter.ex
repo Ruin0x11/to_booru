@@ -30,12 +30,23 @@ defmodule ToBooru.Scraper.Twitter do
             _ -> "#{media.media_url_https}:orig"
           end
 
+    tags = case media.type do
+             n when n in ["animated_gif", "video"] ->
+               ["animated", "video"] ++ if n == "animated_gif" do
+                   ["animated_gif"]
+                 else
+                   []
+                 end
+             _ -> []
+           end
+
     %ToBooru.Model.Upload{
       safety: if tweet.possibly_sensitive do
         :unsafe
       else
         :safe
       end,
+      tags: tags,
       source: URI.parse("https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}"),
       uri: ToBooru.URI.parse(url),
       preview_uri: ToBooru.URI.parse("#{media.media_url_https}:small")

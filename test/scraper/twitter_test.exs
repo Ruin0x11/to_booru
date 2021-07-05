@@ -149,6 +149,8 @@ defmodule ToBooru.Scraper.Twitter.Test do
           scheme: "https",
           userinfo: nil
         },
+        safety: :safe,
+        tags: ["animated", "video"],
         uri: %URI{
           authority: "video.twimg.com",
           fragment: nil,
@@ -156,6 +158,38 @@ defmodule ToBooru.Scraper.Twitter.Test do
           path: "/ext_tw_video/1411558961652895745/pu/vid/720x720/9z-IkXzbJfBoYsLi.mp4",
           port: 443,
           query: "tag=12",
+          scheme: "https",
+          userinfo: nil
+        }
+      }
+      Assertions.assert_maps_equal(result, expected, Map.keys(expected))
+    end
+  end
+
+  test "Can scrape Twitter sites (animated GIF)" do
+    use_cassette "scraper_twitter_animated_gif", match_requests_on: [:query, :request_body] do
+      results = ToBooru.URI.parse("https://twitter.com/hitoshi07140425/status/1412126934129987584") |> ToBooru.Scraper.Twitter.extract_uploads
+      assert Enum.count(results) == 1
+      result = Enum.at(results, 0)
+      expected = %{
+        preview_uri: %URI{
+          authority: "pbs.twimg.com",
+          fragment: nil,
+          host: "pbs.twimg.com",
+          path: "/tweet_video_thumb/E5jh72SVUAAUZNq.jpg:small",
+          port: 443,
+          query: nil,
+          scheme: "https",
+          userinfo: nil
+        },
+        tags: ["animated", "video", "animated_gif"],
+        uri: %URI{
+          authority: "video.twimg.com",
+          fragment: nil,
+          host: "video.twimg.com",
+          path: "/tweet_video/E5jh72SVUAAUZNq.mp4",
+          port: 443,
+          query: nil,
           scheme: "https",
           userinfo: nil
         }
