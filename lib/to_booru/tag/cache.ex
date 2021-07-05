@@ -36,6 +36,13 @@ defmodule ToBooru.Tag.Cache do
     }
   end
 
+  defp make_tag_override(tag) do
+    %ToBooru.Model.Tag{
+      name: tag.name,
+      category: tag.category || :unknown
+    }
+  end
+
   defp make_tag_tag(tag) do
     %ToBooru.Model.Tag{
       name: tag["name"],
@@ -50,7 +57,7 @@ defmodule ToBooru.Tag.Cache do
     }
   end
 
-  defp lookup(other_name) do
+  defp lookup_by_wiki_page(other_name) do
     case Tesla.get(client(), "/wiki_pages.json", query: [{:"search[other_names_match]", other_name}]) do
       {:ok, resp} ->
         fallback = Enum.map(resp.body, &make_tag_wiki_page/1)
@@ -62,6 +69,15 @@ defmodule ToBooru.Tag.Cache do
                end
         end
       {:error, e} -> {:error, e}
+    end
+  end
+
+  defp lookup(other_name) do
+    overrides = Application.get_env(:to_booru, :tag_lookup_overrides) || %{}
+
+    case Map.get(overrides, other_name |> String.downcase) do
+      nil -> lookup_by_wiki_page(other_name)
+      override -> {:ok, Enum.map(override, &make_tag_override/1)}
     end
   end
 

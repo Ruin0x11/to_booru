@@ -1,7 +1,12 @@
 defmodule ToBooru.TestCase do
-  defmacro __using__(_opts) do
+  defmacro __using__(opts) do
+    async = case Keyword.get(opts, :async) do
+              nil -> true
+              x -> x
+            end
+
     quote do
-      use ExUnit.Case, async: true
+      use ExUnit.Case, async: unquote(async)
       use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
       require Assertions
       doctest ToBooru
