@@ -12,7 +12,7 @@ defmodule ToBooru.Test do
 
   test "infer_tags" do
     use_cassette "infer_tags", match_requests_on: [:query, :request_body] do
-      upload = %ToBooru.Model.Upload{uri: ToBooru.URI.parse("https://www.pixiv.net/artworks/91017153"), tags: [%ToBooru.Model.Tag{category: :batch, name: "imported:pixiv"}], safety: :unknown}
+      upload = %ToBooru.Model.Upload{uri: ToBooru.URI.parse("https://www.pixiv.net/artworks/91017153"), tags: [%ToBooru.Model.Tag{category: :batch, name: "imported"}, %ToBooru.Model.Tag{category: :batch, name: "imported:pixiv"}], safety: :unknown}
       |> ToBooru.infer_tags("5f8ff510ac2967f0f5b9a5f006bc98ce")
       assert upload.safety == :safe
       assert Enum.count(upload.tags) == 41

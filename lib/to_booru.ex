@@ -27,10 +27,12 @@ defmodule ToBooru do
   end
 
   def infer_tags(upload, md5) do
-    extra = [%ToBooru.Model.Tag{name: "imported:autotagged", category: :batch}] ++ import_tags(ToBooru.Scraper.for_uri(upload.uri))
+    %{tags: tags} = upload
+    imported = Enum.filter(tags, fn tag -> tag.category == :batch end)
+    extra = imported ++ [%ToBooru.Model.Tag{name: "imported:autotagged", category: :batch}]
     case ToBooru.Tag.lookup_md5(md5) do
       nil -> upload
-      %{tags: tags, safety: safety} -> %{upload | tags: tags ++ extra, safety: safety}
+      %{tags: new_tags, safety: safety} -> %{upload | tags: new_tags ++ extra, safety: safety}
     end
   end
 
