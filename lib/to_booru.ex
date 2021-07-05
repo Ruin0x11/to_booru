@@ -56,7 +56,7 @@ defmodule ToBooru do
         nil -> []
         mod -> mod.extract_uploads(uri)
         |> Enum.map(fn upload -> put_if_nil(upload, :source, uri) end)
-        |> Enum.map(fn upload -> put_if_nil(upload, :preview_uri, uri) end)
+        |> Enum.map(fn upload -> put_if_nil(upload, :preview_uri, upload.uri) end)
         |> infer_tags_all(no_infer)
         |> Enum.map(fn upload -> add_import_tags(upload, mod) end)
       end
