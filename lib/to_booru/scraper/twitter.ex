@@ -34,7 +34,7 @@ defmodule ToBooru.Scraper.Twitter do
         :safe
       end,
       source: URI.parse("https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}"),
-      uri: ToBooru.URI.parse(url),
+      uri: ToBooru.URI.parse("#{url}:orig"),
       preview_uri: ToBooru.URI.parse("#{media.media_url_https}:small")
     }
   end
