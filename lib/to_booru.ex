@@ -1,11 +1,13 @@
 defmodule ToBooru do
+  defp import_tags(mod) do
+    [
+      %ToBooru.Model.Tag{name: "imported", category: :batch},
+      %ToBooru.Model.Tag{name: "imported:#{mod.name}", category: :batch}
+    ]
+  end
+
   defp add_import_tags(upload, mod) do
-    %{upload | tags: upload.tags ++
-      [
-        %ToBooru.Model.Tag{name: "imported", category: :batch},
-        %ToBooru.Model.Tag{name: "imported:#{mod.name}", category: :batch}
-      ]
-    }
+    %{upload | tags: upload.tags ++ import_tags(mod)}
   end
 
   defp put_if_nil(map, key, value) do
@@ -25,11 +27,10 @@ defmodule ToBooru do
   end
 
   def infer_tags(upload, md5) do
-    with extra <- %ToBooru.Model.Tag{name: "imported:autotagged", category: :batch} do
-      case ToBooru.Tag.lookup_md5(md5) do
-        nil -> upload
-        %{tags: tags, safety: safety} -> %{upload | tags: tags ++ [extra], safety: safety}
-      end
+    extra = [%ToBooru.Model.Tag{name: "imported:autotagged", category: :batch}] ++ import_tags(ToBooru.Scraper.for_uri(upload.uri))
+    case ToBooru.Tag.lookup_md5(md5) do
+      nil -> upload
+      %{tags: tags, safety: safety} -> %{upload | tags: tags ++ extra, safety: safety}
     end
   end
 
