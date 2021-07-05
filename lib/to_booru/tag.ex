@@ -43,8 +43,7 @@ defmodule ToBooru.Tag do
 
   defp conv(resp) do
     case resp do
-      {:ok, []} -> nil
-      {:ok, tags} -> List.first tags
+      {:ok, tags} -> tags
       {:error, _} -> nil
     end
   end

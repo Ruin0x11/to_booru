@@ -50,7 +50,7 @@ defmodule ToBooru.Scraper.Pixiv do
 
   def extract_tags(resp) do
     tags = resp["tags"]
-    |> Enum.map(&ToBooru.Tag.lookup/1)
+    |> Enum.flat_map(&ToBooru.Tag.lookup/1)
     |> Enum.filter(& &1)
 
     case extract_artist_tag(resp) do

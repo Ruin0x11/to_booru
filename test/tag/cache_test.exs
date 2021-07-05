@@ -35,4 +35,17 @@ defmodule ToBooru.Tag.Cache.Test do
       assert result == {:ok, [%ToBooru.Model.Tag{category: :meta, name: "drawing_tutorial"}]}
     end
   end
+
+  test "will respect multiple tag overrides" do
+    overrides = %{
+      "講座" => [%{name: "drawing_tutorial", category: :meta}, %{name: "how_to", category: :meta}]
+    }
+    Application.put_env(:to_booru, :tag_lookup_overrides, overrides)
+
+    use_cassette "tag_cache_lookup_overrides_multi", match_requests_on: [:query, :request_body] do
+      result = GenServer.call(ToBooru.Tag.Cache, {:lookup, "講座"})
+
+      assert result == {:ok, [%ToBooru.Model.Tag{category: :meta, name: "drawing_tutorial"}, %ToBooru.Model.Tag{category: :meta, name: "how_to"}]}
+    end
+  end
 end

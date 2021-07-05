@@ -60,7 +60,7 @@ defmodule ToBooru.Tag.Cache do
   defp lookup_by_wiki_page(other_name) do
     case Tesla.get(client(), "/wiki_pages.json", query: [{:"search[other_names_match]", other_name}]) do
       {:ok, resp} ->
-        fallback = Enum.map(resp.body, &make_tag_wiki_page/1)
+        fallback = resp.body |> Enum.take(1) |> Enum.map(&make_tag_wiki_page/1)
         case Enum.find(resp.body, fn x -> Enum.any?(x["other_names"], fn on -> other_name == on end) end) do
           nil -> {:ok, fallback}
           x -> case lookup_tag(x["title"]) do
@@ -83,14 +83,14 @@ defmodule ToBooru.Tag.Cache do
 
   defp lookup_tag(name) do
     case Tesla.get(client(), "/tags.json", query: [{:"search[name_matches]", name}]) do
-      {:ok, resp} -> {:ok, Enum.map(resp.body, &make_tag_tag/1)}
+      {:ok, resp} -> {:ok, Enum.map(resp.body, &make_tag_tag/1) |> Enum.take(1)}
       {:error, e} -> {:error, e}
     end
   end
 
   defp lookup_artist(other_name) do
     case Tesla.get(client(), "/artists.json", query: [{:"search[any_other_name_like]", other_name}]) do
-      {:ok, resp} -> {:ok, Enum.map(resp.body, &make_tag_artist/1)}
+      {:ok, resp} -> {:ok, Enum.map(resp.body, &make_tag_artist/1) |> Enum.at(0)}
       {:error, e} -> {:error, e}
     end
   end
@@ -99,8 +99,10 @@ defmodule ToBooru.Tag.Cache do
     case Tesla.get(client(), "/posts.json", query: [{:tags, "md5:#{md5}"}]) do
       {:ok, resp} -> {:ok, Enum.map(resp.body, & %{
                              tags: ToBooru.Tag.convert_danbooru2_tags(&1),
-                             safety: ToBooru.Scraper.Danbooru2.extract_safety(&1) }
-                       )}
+                             safety: ToBooru.Scraper.Danbooru2.extract_safety(&1)
+                                    })
+                                    |> Enum.at(0)
+                     }
       {:error, e} -> {:error, e}
     end
   end
