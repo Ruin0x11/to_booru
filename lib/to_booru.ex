@@ -8,26 +8,6 @@ defmodule ToBooru do
     }
   end
 
-  defp infer_tags(upload) do
-    with extra <- %ToBooru.Model.Tag{name: "imported:autotagged", category: :batch} do
-      case ToBooru.Tag.lookup_source(to_string(upload.uri)) do
-        nil -> case ToBooru.Tag.lookup_source(to_string(upload.source)) do
-                 nil -> upload
-                 %{tags: tags, safety: safety} -> %{upload | tags: tags ++ [extra], safety: safety}
-               end
-        %{tags: tags, safety: safety} -> %{upload | tags: tags ++ [extra], safety: safety}
-      end
-    end
-  end
-
-  defp infer_tags_all([first | rest] = uploads, no_infer) do
-    if no_infer do
-      [infer_tags(first) | rest]
-    else
-      Enum.map(uploads, &infer_tags/1)
-    end
-  end
-
   defp put_if_nil(map, key, value) do
     case map do
       %{^key => nil} ->
@@ -44,22 +24,28 @@ defmodule ToBooru do
     end
   end
 
+  def infer_tags(upload, md5) do
+    with extra <- %ToBooru.Model.Tag{name: "imported:autotagged", category: :batch} do
+      case ToBooru.Tag.lookup_md5(md5) do
+        nil -> upload
+        %{tags: tags, safety: safety} -> %{upload | tags: tags ++ [extra], safety: safety}
+      end
+    end
+  end
+
   @doc """
   Extracts images from the given URI and converts each to a
   szurubooru-compatible upload.
   """
   def extract_uploads(string, opts \\ [])
 
-  def extract_uploads(uri = %URI{}, opts) do
-    with no_infer <- Keyword.get(opts, :no_infer, false) do
-      case ToBooru.Scraper.for_uri(uri) do
-        nil -> []
-        mod -> mod.extract_uploads(uri)
-        |> Enum.map(fn upload -> put_if_nil(upload, :source, uri) end)
-        |> Enum.map(fn upload -> put_if_nil(upload, :preview_uri, upload.uri) end)
-        |> infer_tags_all(no_infer)
-        |> Enum.map(fn upload -> add_import_tags(upload, mod) end)
-      end
+  def extract_uploads(uri = %URI{}, _opts) do
+    case ToBooru.Scraper.for_uri(uri) do
+      nil -> []
+      mod -> mod.extract_uploads(uri)
+      |> Enum.map(fn upload -> put_if_nil(upload, :source, uri) end)
+      |> Enum.map(fn upload -> put_if_nil(upload, :preview_uri, upload.uri) end)
+      |> Enum.map(fn upload -> add_import_tags(upload, mod) end)
     end
   end
 

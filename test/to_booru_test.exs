@@ -9,4 +9,16 @@ defmodule ToBooru.Test do
       Assertions.assert_maps_equal(result.uri, result.preview_uri, Map.keys(result.uri))
     end
   end
+
+  test "infer_tags" do
+    use_cassette "infer_tags", match_requests_on: [:query, :request_body] do
+      upload = %ToBooru.Model.Upload{tags: [], safety: :unknown}
+      |> ToBooru.infer_tags("5f8ff510ac2967f0f5b9a5f006bc98ce")
+      assert upload.safety == :safe
+      assert Enum.count(upload.tags) == 39
+      assert Enum.at(upload.tags, -1).name == "imported:autotagged"
+      tag = Enum.at(upload.tags, 0)
+      Assertions.assert_maps_equal(tag, %ToBooru.Model.Tag{category: :copyright, name: "hololive"}, Map.keys(tag))
+    end
+  end
 end

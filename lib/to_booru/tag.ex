@@ -57,8 +57,8 @@ defmodule ToBooru.Tag do
     GenServer.call(ToBooru.Tag.Cache, {:lookup_artist, other_name}) |> conv
   end
 
-  def lookup_source(source) do
-    GenServer.call(ToBooru.Tag.Cache, {:lookup_source, source}) |> conv
+  def lookup_md5(md5) do
+    GenServer.call(ToBooru.Tag.Cache, {:lookup_md5, md5}) |> conv
   end
 
   def clear_cache() do
